@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EduQuest | Learning Platform</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root {
+    --bg: #f4f6f8;
+    --card: #ffffff;
+    --primary: #2f80ed;
+    --accent: #27ae60;
+    --text: #333;
+}
+
+body.dark {
+    --bg: #121212;
+    --card: #1e1e1e;
+    --primary: #90caf9;
+    --accent: #66bb6a;
+    --text: #f5f5f5;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+}
+
+/* Header */
+header {
+    background: var(--primary);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 32px;
+}
+
+header button {
+    margin-top: 10px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Layout */
+.container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+}
+
+/* Card */
+.card {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* Progress */
+.progress-bar {
+    height: 20px;
+    background: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: 0.4s;
+}
+
+/* Lessons */
+.lesson {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.lesson input {
+    margin-right: 10px;
+    transform: scale(1.2);
+}
+
+/* Badge */
+.badge {
+    margin-top: 10px;
+    padding: 10px;
+    background: var(--accent);
+    color: white;
+    border-radius: 6px;
+    display: none;
+    text-align: center;
+}
+
+/* Quiz */
+.quiz button {
+    display: block;
+    width: 100%;
+    margin: 8px 0;
+    padding: 8px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.quiz button:hover {
+    opacity: 0.9;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 15px;
+    background: var(--primary);
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 26px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>EduQuest</h1>
+    <p>Interactive Self-Paced Learning Platform</p>
+    <button onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
+</header>
+
+<div class="container">
+
+    <!-- Progress -->
+    <div class="card">
+        <h2>Learning Progress</h2>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p id="progressText">0% Completed</p>
+        <div class="badge" id="badge">🎉 Congratulations! Course Completed</div>
+    </div>
+
+    <!-- Lessons -->
+    <div class="card">
+        <h2>Lessons</h2>
+        <h3>Web Development Basics</h3>
+
+        <div class="lesson"><input type="checkbox" id="l1"> HTML Fundamentals</div>
+        <div class="lesson"><input type="checkbox" id="l2"> CSS Styling</div>
+        <div class="lesson"><input type="checkbox" id="l3"> JavaScript Basics</div>
+
+        <h3>Advanced Topics</h3>
+        <div class="lesson"><input type="checkbox" id="l4"> DOM Manipulation</div>
+        <div class="lesson"><input type="checkbox" id="l5"> Local Storage</div>
+    </div>
+
+    <!-- Quiz -->
+    <div class="card quiz">
+        <h2>Mini Quiz</h2>
+        <p id="question"></p>
+
+        <div id="options"></div>
+
+        <p id="quizResult"></p>
+        <p id="scoreText"></p>
+    </div>
+
+</div>
+
+<footer>
+    <p>© 2025 EduQuest | Designed for Learning & Growth</p>
+</footer>
+
+<script>
+/* Progress Tracking */
+const checkboxes = document.querySelectorAll("input[type='checkbox']");
+const progressFill = document.getElementById("progressFill");
+const progressText = document.getElementById("progressText");
+const badge = document.getElementById("badge");
+
+function updateProgress() {
+    const total = checkboxes.length;
+    const checked = document.querySelectorAll("input[type='checkbox']:checked").length;
+    const percent = Math.round((checked / total) * 100);
+
+    progressFill.style.width = percent + "%";
+    progressText.innerText = percent + "% Completed";
+    badge.style.display = percent === 100 ? "block" : "none";
+
+    const data = {};
+    checkboxes.forEach(cb => data[cb.id] = cb.checked);
+    localStorage.setItem("eduquest-progress", JSON.stringify(data));
+}
+
+function loadProgress() {
+    const saved = JSON.parse(localStorage.getItem("eduquest-progress"));
+    if (saved) {
+        checkboxes.forEach(cb => cb.checked = saved[cb.id]);
+    }
+    updateProgress();
+}
+
+checkboxes.forEach(cb => cb.addEventListener("change", updateProgress));
+
+/* Dark Mode */
+function toggleDarkMode() {
+    document.body.classList.toggle("dark");
+}
+
+/* Quiz Logic */
+const quiz = [
+    {
+        q: "Which language is used to structure web pages?",
+        options: ["CSS", "HTML", "JavaScript"],
+        answer: "HTML"
+    },
+    {
+        q: "Which language is used for styling web pages?",
+        options: ["HTML", "CSS", "Python"],
+        answer: "CSS"
+    },
+    {
+        q: "Which language adds interactivity to websites?",
+        options: ["Java", "JavaScript", "C"],
+        answer: "JavaScript"
+    },
+    {
+        q: "Which API is used to store data in the browser?",
+        options: ["localStorage", "MySQL", "MongoDB"],
+        answer: "localStorage"
+    }
+];
+
+let currentQ = 0;
+let score = 0;
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const quizResult = document.getElementById("quizResult");
+const scoreText = document.getElementById("scoreText");
+
+function loadQuestion() {
+    quizResult.innerText = "";
+    const q = quiz[currentQ];
+    questionEl.innerText = q.q;
+    optionsEl.innerHTML = "";
+
+    q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.onclick = () => checkAnswer(opt);
+        optionsEl.appendChild(btn);
+    });
+}
+
+function checkAnswer(selected) {
+    if (selected === quiz[currentQ].answer) {
+        score++;
+        quizResult.innerText = "✅ Correct!";
+    } else {
+        quizResult.innerText = "❌ Wrong!";
+    }
+
+    currentQ++;
+
+    setTimeout(() => {
+        if (currentQ < quiz.length) {
+            loadQuestion();
+        } else {
+            questionEl.innerText = "Quiz Completed 🎉";
+            optionsEl.innerHTML = "";
+            scoreText.innerText = `Your Score: ${score} / ${quiz.length}`;
+            localStorage.setItem("eduquest-quiz-score", score);
+        }
+    }, 800);
+}
+
+/* Init */
+loadProgress();
+loadQuestion();
+</script>
+
+</body>
+</html>
